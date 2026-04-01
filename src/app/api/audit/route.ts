@@ -5,37 +5,46 @@ import { checkRateLimit } from "@/lib/rate-limiter";
 import { headers } from "next/headers";
 
 export async function POST(req: Request) {
+    const headerList = await headers();
+    const ip = headerList.get("x-forwarded-for") || "anonymous_session";
+
     try {
-        const headerList = await headers();
-        const ip = headerList.get("x-forwarded-for") || "anonymous_session";
         const { allowed, remaining, resetMs } = checkRateLimit(ip);
 
         if (!allowed) {
             return NextResponse.json({
-                error: "Rate limit exceeded. Nexus is expensive to run. Quota resets soon.",
-                resetAt: new Date(resetMs).toISOString()
+                error: "Rate limit exceeded. You have used all 5 audits for this hour. " +
+                    `Quota resets at ${new Date(resetMs).toLocaleTimeString()}.`,
+                resetAt: new Date(resetMs).toISOString(),
             }, { status: 429 });
         }
 
-        const { idea, region, sector } = await req.json();
+        const body = await req.json();
+        const { idea, region, sector } = body;
 
-        if (!idea) {
-            return NextResponse.json({ error: "Idea is required" }, { status: 400 });
+        if (!idea?.trim()) {
+            return NextResponse.json({ error: "Idea is required to run an audit." }, { status: 400 });
         }
 
-        // Run the Nexus Agentic Truth Engine
+        console.log(`[Audit API] New request from ${ip} | remaining audits: ${remaining}`);
+
         const auditResult = await runNexusAudit(
             idea.trim(),
             region || "Lagos, Nigeria",
-            sector || "other"
+            sector || "Other"
         );
 
         return NextResponse.json(auditResult);
-    } catch (error) {
-        console.error("Audit Error:", error);
+    } catch (error: any) {
+        const msg = error?.message || "Unknown internal error";
+        console.error("[Audit API] FATAL ERROR:", msg);
         return NextResponse.json(
-            { error: "Failed to process audit" },
+            {
+                error: `Truth Engine Failure: ${msg}. Check that OPENROUTER_API_KEY is set in .env.local and restart the dev server.`,
+                isSimulated: false
+            },
             { status: 500 }
         );
     }
 }
+
