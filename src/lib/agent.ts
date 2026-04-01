@@ -176,20 +176,26 @@ ${liveSignals}
 MISSION: Perform a deep, REAL, factual market audit. Use the live signals above as your primary sources.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-COMPETITIVE LANDSCAPE REQUIREMENTS (MANDATORY):
-You MUST include AT LEAST 10 real companies. These are KNOWN REAL companies in the idea validation / founder iteration space globally:
-1. Validator AI (validatorai.com) - active, global - SaaS tool for AI-powered idea validation
-2. IdeaProof (ideaproof.io) - active, global - AI-generated market validation reports
-3. Cambium AI (cambium.ai) - active, global - Automates go-to-market strategy
-4. Bubble (bubble.io) - active, global - No-code MVP testing for idea iteration
-5. Indie Hackers (indiehackers.com) - active, global - community for founder idea iteration
-6. Product Hunt (producthunt.com) - active, global - market demand signal for new ideas
-7. GrowthMentor (growthmentor.com) - active, global - mentor network for early founder feedback
-8. Lean Stack (leanstack.com) - active, global - Lean Canvas and market validation tool
-9. Strikingly - pivot, global - started as idea validation tool, pivoted to website builder
-10. Founders Factory Africa (foundersfactory.com/africa) - active, African - supports African startup ideation
-11. GreenHouse Capital (greenhouse.capital) - active, African - African startup acceleration with pre-validation
-12. Wennovation Hub (wennovationhub.org) - active, local - Nigerian innovation & idea incubation hub
+COMPETITIVE LANDSCAPE & PRECEDENT FAILURES (MANDATORY ANALYTICS):
+You MUST analyze the following RECENT REAL-WORLD FAILURES that ignored market demand validation:
+1. Quibi ($1.75B failure) - Misjudged short-form demand on mobile vs binge-watching.
+2. Juicero ($118M failure) - Solution looking for a problem (bags could be squeezed by hand).
+3. Aria Insights (formerly CyPhy Works) - High-tech drone for industrial problem that didn't exist at scale.
+4. Dinnr - Founders prioritized personal interest over market validation (home-cooking ingredients).
+5. AskTina - High landing page traffic but zero paid conversions (no "hair on fire" problem).
+
+ACTIVE MARKET LEADERS & ITERATION TOOLS:
+1. Validator AI (validatorai.com) - AI-powered idea validation reports.
+2. IdeaProof (ideaproof.io) - In-depth market sizing and validation.
+3. Cambium AI (cambium.ai) - GTM strategy automation.
+4. Bubble (bubble.io) - The gold standard for MVP iteration and demand testing.
+5. GrowthMentor (growthmentor.com) - Human-in-the-loop validation experts.
+6. Founders Factory Africa - Supports pre-validation of African startup ideas.
+
+RESEARCH REQUIREMENTS:
+1. Identify 12+ REAL direct competitors and PRECEDENT startups.
+2. Signal 5+ exact Reddit/Nairaland threads using the LIVE SIGNALS provided.
+3. Signal 5+ academic papers proving the "No Market Need" failure rate (e.g., CB Insights 42%).
 
 For EACH company provide:
 - founders (real names from public records)
