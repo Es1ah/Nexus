@@ -1,0 +1,141 @@
+// Constants for the Nexus application
+
+export const REGIONS = [
+    { value: "lagos-nigeria", label: "Lagos, Nigeria" },
+    { value: "abuja-nigeria", label: "Abuja, Nigeria" },
+    { value: "port-harcourt-nigeria", label: "Port Harcourt, Nigeria" },
+    { value: "kano-nigeria", label: "Kano, Nigeria" },
+    { value: "accra-ghana", label: "Accra, Ghana" },
+    { value: "nairobi-kenya", label: "Nairobi, Kenya" },
+    { value: "johannesburg-sa", label: "Johannesburg, South Africa" },
+    { value: "cape-town-sa", label: "Cape Town, South Africa" },
+    { value: "cairo-egypt", label: "Cairo, Egypt" },
+    { value: "dar-es-salaam-tz", label: "Dar es Salaam, Tanzania" },
+    { value: "kampala-uganda", label: "Kampala, Uganda" },
+    { value: "addis-ababa-ethiopia", label: "Addis Ababa, Ethiopia" },
+    { value: "kigali-rwanda", label: "Kigali, Rwanda" },
+    { value: "dakar-senegal", label: "Dakar, Senegal" },
+    { value: "luanda-angola", label: "Luanda, Angola" },
+];
+
+export const SECTORS = [
+    { value: "energy", label: "Energy & Utilities", icon: "⚡" },
+    { value: "fintech", label: "FinTech & Banking", icon: "💳" },
+    { value: "healthtech", label: "HealthTech & Pharma", icon: "🏥" },
+    { value: "agritech", label: "AgriTech & Food", icon: "🌾" },
+    { value: "edtech", label: "EdTech & Training", icon: "📚" },
+    { value: "logistics", label: "Logistics & Transport", icon: "🚚" },
+    { value: "ecommerce", label: "E-Commerce & Retail", icon: "🛒" },
+    { value: "proptech", label: "PropTech & Real Estate", icon: "🏗️" },
+    { value: "cleantech", label: "CleanTech & Environment", icon: "🌍" },
+    { value: "media", label: "Media & Entertainment", icon: "🎬" },
+    { value: "saas", label: "SaaS & Enterprise", icon: "☁️" },
+    { value: "manufacturing", label: "Manufacturing", icon: "🏭" },
+    { value: "telecom", label: "Telecom & Connectivity", icon: "📡" },
+    { value: "other", label: "Other", icon: "🔮" },
+];
+
+export const AGENT_STEPS = [
+    {
+        agent: "Market Intelligence",
+        messages: [
+            "Scanning local forums (Nairaland/Reddit)...",
+            "Analyzing 1-star reviews on App Store/Play Store...",
+            "Scraping YouTube comments for feature requests...",
+            "Fetching search volume from Google Search Console...",
+            "Analyzing trending complaints on social media...",
+            "Compiling demand signals from local forums...",
+            "Historical price trend analysis for similar offerings...",
+            "Mapping consumer spending power in target region...",
+            "Scraping local news for sector-specific sentiment...",
+        ],
+    },
+    {
+        agent: "Regulatory Scanner",
+        messages: [
+            "Cross-referencing with regulatory databases...",
+            "Checking SON certification requirements...",
+            "Scanning NMDPRA compliance guidelines...",
+            "Consulting 2024 industrial safety standards...",
+            "Mapping compliance cost estimates...",
+            "Analyzing data privacy laws (NDPR/GDPR)...",
+            "Checking tax incentives for pioneer status...",
+            "Scanning local government levy structures...",
+        ],
+    },
+    {
+        agent: "Competitive Analyst",
+        messages: [
+            "Identifying direct and indirect competitors...",
+            "Extracting review themes from competitors...",
+            "Analyzing competitor pricing strategies...",
+            "Mapping competitive gaps and failure points...",
+            "Generating opportunity matrix...",
+            "Tracking competitor funding rounds & burn rate logs...",
+            "Analyzing competitor hiring patterns for tech stack...",
+            "Reverse engineering competitor distribution strategy...",
+        ],
+    },
+    {
+        agent: "Resource Mapper",
+        messages: [
+            "Calculating technical requirements...",
+            "Estimating MVP development costs...",
+            "Identifying required skill sets...",
+            "Mapping local talent availability...",
+            "Building resource blueprint...",
+            "Analyzing server/latency requirements for the region...",
+            "Mapping logistics & supply chain bottlenecks...",
+            "Evaluating third-party API costs for the sector...",
+        ],
+    },
+    {
+        agent: "Trust Network",
+        messages: [
+            "Identifying local distribution channels...",
+            "Mapping industry partnerships...",
+            "Analyzing trust anchors and gatekeepers...",
+            "Evaluating community engagement nodes...",
+            "Finalizing trust network report...",
+            "Checking associations & regulatory bodies for backing...",
+            "Identifying local micro-influencers for the niche...",
+            "Mapping B2B trust-building milestones...",
+        ],
+    },
+    {
+        agent: "Research Librarian",
+        messages: [
+            "Querying arXiv / Google Scholar for peer-reviewed gap analysis...",
+            "Mining public library databases (SSRN, JSTOR)...",
+            "Clustering data from high-signal academic whitepapers...",
+            "Validating proof-of-concept from established research nodes...",
+            "Extracting institutional data clusters for the sector...",
+            "Mapping theoretical failure modes in regional tech adoption...",
+        ],
+    },
+    {
+        agent: "Truth Engine",
+        messages: [
+            "Synthesizing all agent results...",
+            "Clustering 124 data-mined signal points...",
+            "Cross-referencing signals with academic proof-of-concept...",
+            "Generating Full Evidence Report with Exact Provenance...",
+            "Calculating final Survival Score...",
+            "Attaching Truth Report to session...",
+            "Finalizing executive summary & pivot map...",
+        ],
+    },
+];
+
+export const MOCK_TICKER_DATA = [
+    { label: "USD/NGN", value: "₦1,580.50", change: "+0.8%", direction: "up" as const },
+    { label: "Fuel (PMS)", value: "₦620/L", change: "+2.1%", direction: "up" as const },
+    { label: "Diesel (AGO)", value: "₦1,150/L", change: "-0.5%", direction: "down" as const },
+    { label: "BTC/NGN", value: "₦142.3M", change: "+3.2%", direction: "up" as const },
+    { label: "Inflation Rate", value: "28.9%", change: "+0.3%", direction: "up" as const },
+    { label: "MPR", value: "27.5%", change: "0.0%", direction: "neutral" as const },
+    { label: "GDP Growth", value: "3.19%", change: "+0.4%", direction: "up" as const },
+    { label: "Internet Users", value: "104M", change: "+5.2%", direction: "up" as const },
+    { label: "Trending", value: "#LagosTech", direction: "neutral" as const },
+    { label: "Trending", value: "#AfricanStartups", direction: "neutral" as const },
+];

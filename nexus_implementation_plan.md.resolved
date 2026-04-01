@@ -1,0 +1,40 @@
+# Nexus — Implementation Plan
+
+## Overview
+Nexus is an AI-driven validation ecosystem ("Truth Engine") for African founders. It scores startup ideas across 5 Survival Pillars and delivers a comprehensive Truth Report.
+
+## Architecture
+
+```mermaid
+graph TB
+    A[Diagnostic Intake Terminal] --> B[API Route: /api/audit]
+    B --> C[Web Scraping Agent]
+    B --> D[Gemini AI Brain]
+    C --> D
+    D --> E[Results Dashboard]
+    E --> F[5 Pillar Cards + Survival Score]
+```
+
+## Pages
+1. **Landing / Intake** (`/`) — Hero + input form with region/sector selectors + live economic ticker
+2. **Processing** (`/processing`) — Animated agent log showing real-time analysis steps
+3. **Dashboard** (`/dashboard`) — Survival Score gauge, 5 Pillar Cards, Immediate Move action
+
+## Tech Stack
+| Layer | Technology |
+|-------|-----------|
+| Framework | Next.js 15 (App Router) |
+| Styling | Tailwind CSS + shadcn/ui |
+| AI | Google Gemini 1.5 Flash API |
+| Backend | Next.js API Routes (Convex-ready) |
+| Scraping | Cheerio + Axios |
+
+## Implementation Steps
+1. ✅ Initialize Next.js 15 project
+2. ✅ Install dependencies (Tailwind, shadcn/ui, Gemini SDK, Cheerio)
+3. ✅ Build Design System (colors, typography, animations)
+4. ✅ Build Intake Page (hero, input form, region/sector, ticker)
+5. ✅ Build Processing Page (agent log animation)
+6. ✅ Build Dashboard Page (survival score, pillar cards, action)
+7. ✅ Build API Route (`/api/audit`)
+8. ✅ Wire everything together
