@@ -72,7 +72,12 @@ export default function HomePage() {
       });
 
       if (!response.ok) {
-        throw new Error("Server error");
+        let msg = `Server error (${response.status})`;
+        try {
+          const errData = await response.json();
+          if (errData?.error) msg = errData.error;
+        } catch { /* ignore parse errors */ }
+        throw new Error(msg);
       }
 
       const data = await response.json();

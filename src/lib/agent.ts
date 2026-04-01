@@ -1,12 +1,38 @@
 import axios from "axios";
 import * as cheerio from "cheerio";
+import * as fs from "fs";
+import * as path from "path";
 import { generateMockAuditResult } from "./mock-data";
 import type { NexusAuditResult, SourceReport } from "./types";
 
+// ─── FAILSAFE ENV LOADER ─────────────────────────────────────────────────────
+// If Next.js didn't inject .env.local (e.g. cold start, killed process),
+// we read it directly from disk as a fallback.
+function loadEnvKey(keyName: string): string {
+    // First try process.env (normal Next.js injection)
+    if (process.env[keyName]) return process.env[keyName]!;
+
+    // Fallback: parse .env.local manually from disk
+    try {
+        const envPath = path.join(process.cwd(), ".env.local");
+        const raw = fs.readFileSync(envPath, "utf8");
+        const match = raw.match(new RegExp(`^${keyName}=(.+)$`, "m"));
+        if (match?.[1]) {
+            const val = match[1].trim();
+            process.env[keyName] = val; // cache it
+            console.log(`[Truth Engine] Loaded ${keyName} from .env.local (suffix: ${val.slice(-6)})`);
+            return val;
+        }
+    } catch {
+        // file not found
+    }
+    return "";
+}
+
 // ─── AI PROVIDER (always-active, no silent fallback) ─────────────────────────
 async function callAI(prompt: string, maxTokens = 4000): Promise<string> {
-    const key = process.env.OPENROUTER_API_KEY;
-    if (!key) throw new Error("OPENROUTER_API_KEY is not set in .env.local");
+    const key = loadEnvKey("OPENROUTER_API_KEY");
+    if (!key) throw new Error("OPENROUTER_API_KEY not found in process.env or .env.local");
 
     const MAX_RETRIES = 3;
     let lastErr: any;
