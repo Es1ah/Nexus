@@ -340,25 +340,47 @@ Respond ONLY with valid, parseable JSON in this EXACT structure (no markdown fen
 
     let intel: any = null;
     let aiError: string | null = null;
+    let intelText: string = "";
 
     try {
-        const intelText = await callAI(intelPrompt, 4000);
-        console.log("[Truth Engine] AI response received. Parsing JSON...");
+        intelText = await callAI(intelPrompt, 4000);
+        console.log("[Truth Engine] AI response received. Pre-processing JSON...");
 
-        // Try to extract JSON - handle markdown code fences
-        let cleaned = intelText.replace(/```json\n?/g, "").replace(/```\n?/g, "").trim();
-        const jsonMatch = cleaned.match(/\{[\s\S]*\}/);
+        // ULTRA-ROBUST JSON CLEANER
+        let cleaned = intelText
+            .replace(/```json\n?/g, "")
+            .replace(/```\n?/g, "")
+            .trim();
 
-        if (!jsonMatch) {
-            throw new Error(`AI did not return valid JSON. Response starts with: ${intelText.slice(0, 200)}`);
+        // Extract object using bracket matching
+        const firstBrace = cleaned.indexOf("{");
+        const lastBrace = cleaned.lastIndexOf("}");
+        
+        if (firstBrace === -1 || lastBrace === -1) {
+            throw new Error("AI response contains no JSON structure.");
         }
-        intel = JSON.parse(jsonMatch[0]);
-        console.log("[Truth Engine] ✅ JSON parsed successfully! Competitors found:", intel.competitiveLandscape?.companies?.length || 0);
+        
+        cleaned = cleaned.substring(firstBrace, lastBrace + 1);
+
+        // Fix common AI JSON errors before parsing
+        // 1. Remove trailing commas in arrays/objects
+        cleaned = cleaned.replace(/,\s*([\]\}])/g, "$1");
+        
+        try {
+            intel = JSON.parse(cleaned);
+        } catch (parseErr: any) {
+            console.warn("[Truth Engine] standard JSON.parse failed, attempting aggressive repair...");
+            // If it still fails, it might be due to unescaped newlines in strings
+            const repaired = cleaned.replace(/\n\s*([^"]*":)/g, " $1"); // Join broken lines
+            intel = JSON.parse(repaired);
+        }
+
+        console.log("[Truth Engine] ✅ Result parsed. Competitive Landscape count:", intel.competitiveLandscape?.companies?.length || 0);
     } catch (e: any) {
         aiError = e.message;
-        console.error("[Truth Engine] ❌ CRITICAL AI FAILURE:", aiError);
-        // DO NOT fall back to simulation — throw so the API returns a 500 with a real error message
-        throw new Error(`AI audit failed: ${aiError}. Check server logs for details.`);
+        console.error("[Truth Engine] ❌ JSON PARSE FAILURE:", aiError);
+        console.log("[Truth Engine] Partial response for debugging:", intelText?.slice(0, 500) + "...");
+        throw new Error(`Data Structure Mismatch: ${aiError}. The AI response was too complex to parse safely. Please try a simpler search or retry.`);
     }
 
     // ── MAP AI RESULTS INTO PILLARS ─────────────────────────────────────────
