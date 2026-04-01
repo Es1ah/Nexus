@@ -1,8 +1,21 @@
 import { NextResponse } from "next/server";
 import { runNexusAudit } from "@/lib/agent";
+import { checkRateLimit } from "@/lib/rate-limiter";
+import { headers } from "next/headers";
 
 export async function POST(req: Request) {
     try {
+        const headerList = await headers();
+        const ip = headerList.get("x-forwarded-for") || "anonymous_session";
+        const { allowed, remaining, resetMs } = checkRateLimit(ip);
+
+        if (!allowed) {
+            return NextResponse.json({
+                error: "Rate limit exceeded. Nexus is expensive to run. Quota resets soon.",
+                resetAt: new Date(resetMs).toISOString()
+            }, { status: 429 });
+        }
+
         const { idea, region, sector } = await req.json();
 
         if (!idea) {

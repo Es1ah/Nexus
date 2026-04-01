@@ -2,31 +2,7 @@ import * as cheerio from "cheerio";
 import axios from "axios";
 import { generateMockAuditResult } from "./mock-data";
 import type { NexusAuditResult, SourceReport } from "./types";
-
-/**
- * Calls the AI API via OpenRouter.
- */
-async function callAI(prompt: string): Promise<string> {
-    const apiKey = process.env.OPENROUTER_API_KEY || "";
-    const response = await axios.post(
-        "https://openrouter.ai/api/v1/chat/completions",
-        {
-            model: "google/gemini-2.0-flash-001",
-            messages: [{ role: "user", content: prompt }],
-            max_tokens: 2500,
-            temperature: 0.1,
-        },
-        {
-            headers: {
-                Authorization: `Bearer ${apiKey}`,
-                "Content-Type": "application/json",
-                "HTTP-Referer": "https://nexus-truth.engine",
-                "X-Title": "Nexus Truth Engine",
-            },
-        }
-    );
-    return response.data.choices[0].message.content as string;
-}
+import { callAI } from "./ai-provider";
 
 /**
  * Nexus Truth Engine - Autonomous Agent Orchestrator
@@ -41,7 +17,7 @@ export async function runNexusAudit(
     // 1. Initial Research / Blueprint
     const baseResult = generateMockAuditResult(idea, region, sector);
 
-    if (process.env.OPENROUTER_API_KEY) {
+    if (process.env.OPENROUTER_API_KEY || process.env.ZAI_API_KEY) {
         try {
             // STEP 1: DEEP MARKET & COMPETITIVE AUDIT
             const intelPrompt = `
@@ -111,7 +87,7 @@ Respond ONLY with valid JSON with this exact structure:
   "marketSentiment": {"pos": Number, "neg": Number, "neu": Number}
 }
 `;
-            const intelText = await callAI(intelPrompt);
+            const intelText = await callAI(intelPrompt, { maxTokens: 2500, temperature: 0.1 });
             const jsonMatch = intelText.match(/\{[\s\S]*\}/);
             if (!jsonMatch) throw new Error("AI failed to return valid data structure");
             const intel = JSON.parse(jsonMatch[0]);
@@ -249,7 +225,7 @@ Respond ONLY with valid JSON:
   ]
 }
 `;
-            const verdictText = await callAI(verdictPrompt);
+            const verdictText = await callAI(verdictPrompt, { maxTokens: 1500, temperature: 0.2 });
             const vMatch = verdictText.match(/\{[\s\S]*\}/);
             if (!vMatch) throw new Error("AI failed to return verdict structure");
             const verdict = JSON.parse(vMatch[0]);

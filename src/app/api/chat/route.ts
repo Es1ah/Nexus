@@ -1,30 +1,21 @@
 import { NextResponse } from "next/server";
-import axios from "axios";
-
-async function callAI(prompt: string): Promise<string> {
-    const apiKey = process.env.OPENROUTER_API_KEY || "";
-    const response = await axios.post(
-        "https://openrouter.ai/api/v1/chat/completions",
-        {
-            model: "google/gemini-2.0-flash-001",
-            messages: [{ role: "user", content: prompt }],
-            max_tokens: 500,
-            temperature: 0.7,
-        },
-        {
-            headers: {
-                Authorization: `Bearer ${apiKey}`,
-                "Content-Type": "application/json",
-                "HTTP-Referer": "https://nexus-truth.engine",
-                "X-Title": "Nexus Truth Engine",
-            },
-        }
-    );
-    return response.data.choices[0].message.content as string;
-}
+import { callAI } from "@/lib/ai-provider";
+import { checkRateLimit } from "@/lib/rate-limiter";
+import { headers } from "next/headers";
 
 export async function POST(req: Request) {
     try {
+        const headerList = await headers();
+        const ip = headerList.get("x-forwarded-for") || "anonymous_session";
+        const { allowed, resetMs } = checkRateLimit(ip);
+
+        if (!allowed) {
+            return NextResponse.json({
+                reply: "Rate limit exceeded. Quota resets soon.",
+                resetAt: new Date(resetMs).toISOString()
+            }, { status: 429 });
+        }
+
         const { persona, idea, message, history, fullAudit } = await req.json();
 
         const chatContext = (history || []).map((m: any) => `${m.role.toUpperCase()}: ${m.content}`).join("\n");
@@ -52,7 +43,7 @@ INSTRUCTIONS:
 3. Keep it conversational, brutal (if needed), and brief (max 3 sentences).
 `;
 
-        const reply = await callAI(prompt);
+        const reply = await callAI(prompt, { maxTokens: 500, temperature: 0.7 });
         return NextResponse.json({ reply });
     } catch (error: any) {
         console.error("Persona Chat Error:", error.message);
