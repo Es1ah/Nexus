@@ -39,12 +39,17 @@ CRITICAL INSTRUCTIONS:
 - SPECIFICITY: Avoid general category links (e.g., /search?q=...). Link to the actual post or profile where the signal was extracted so users can trust the credibility.
 
 RESEARCH REQUIREMENTS:
-1. Identify 5 REAL direct competitors and 5 HISTORICAL/FAILED startups in this space in ${region}, Africa, and Globally.
-2. Find 3 REAL-WORLD Nigerian Blog posts and 3 REAL Instagram Handles dealing with this sector.
-3. Extract real pain points from current digital noise (forums, reviews, blog comments).
-4. For Research Papers, find 3 specific academic or institutional papers proving the market gap.
-5. Provide specific "Pillar" data (Score 0-100, Summary, 5 real details each).
-6. Competitive Landscape: REAL companies with founders, funding rounds, and history.
+1. Identify 10+ REAL direct competitors and PRECEDENT startups (those that paved the way or failed) in this space. 
+2. Include both ACTIVE market leaders and SHUTDOWN/PIVOTED examples to analyze failure modes.
+3. For the Competitive Landscape, provide at least 8-10 detailed company profiles. Use real names (e.g., if valid: IdeaProof, ValidatorAI, Cambium, Bubble, Indie Hackers, GrowthMentor, PickFu).
+4. Find 5+ REAL-WORLD Blog posts and 5+ REAL Instagram/Twitter Handles for this niche.
+5. Extract specific "Signals" (Scores 0-100, Summary, 8 real details each) for: Market Hunger, Regulatory Radar, Competitive Gaps, Resource Blueprint, Trust Network, and Research Librarian.
+6. Research Librarian: Extract 5 specific academic papers or whitepapers with direct PDF URLs proving the product-market gap.
+
+DEBUG MODE: 
+- Log all API attempts to the internal trace.
+- DO NOT return generic placeholders like "Competitor A". Use actual entity names with founders and funding data.
+- Ensure the total response JSON structure is high-fidelity and contains the 'CompetitiveLandscape' with 'companies' array populated.
 
 Respond ONLY with valid JSON with this exact structure:
 {
@@ -52,6 +57,8 @@ Respond ONLY with valid JSON with this exact structure:
   "regulatoryRadar": { "summary": String, "details": [String], "score": Number },
   "competitiveGaps": { "summary": String, "details": [String], "score": Number },
   "resourceBlueprint": { "summary": String, "details": [String], "score": Number },
+  "trustAnchors": { "summary": String, "details": [String], "score": Number },
+  "researchLibrarian": { "summary": String, "details": [String], "score": Number },
   "competitiveLandscape": { 
     "summary": String, 
     "details": [String], 
@@ -67,7 +74,7 @@ Respond ONLY with valid JSON with this exact structure:
       "businessModel": String,
       "whyItFailed": String,
       "publicData": {},
-      "articles": [{"title": String, "url": String, "source": "TechCrunch | YC | a16z | Twitter | Other"}]
+      "articles": [{"title": String, "url": String, "source": String}]
     }]
   },
   "sources": {
@@ -109,9 +116,12 @@ Respond ONLY with valid JSON with this exact structure:
             updatePillar('competitiveGaps', intel.competitiveGaps);
             updatePillar('resourceBlueprint', intel.resourceBlueprint);
             updatePillar('trustAnchors', intel.trustAnchors);
+            updatePillar('researchLibrarian', intel.researchLibrarian);
             updatePillar('competitiveLandscape', intel.competitiveLandscape);
+
             if (intel.competitiveLandscape?.companies) {
                 baseResult.pillars.competitiveLandscape.companies = intel.competitiveLandscape.companies;
+                console.log(`[Truth Engine] Captured ${intel.competitiveLandscape.companies.length} real-world startup profiles from digital audit.`);
             }
 
             // Overwrite Source Reports with REAL AI DATA

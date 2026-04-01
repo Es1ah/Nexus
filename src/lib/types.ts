@@ -118,6 +118,7 @@ export interface NexusAuditResult {
         competitiveGaps: CompetitiveGap;
         resourceBlueprint: ResourceBlueprint;
         trustAnchors: TrustAnchor;
+        researchLibrarian: PillarResult;
         competitiveLandscape: CompetitiveLandscape;
     };
     sourceReports: {

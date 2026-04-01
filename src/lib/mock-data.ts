@@ -102,7 +102,7 @@ export function generateMockAuditResult(
             trustAnchors: {
                 name: "Trust Anchors",
                 score: Math.floor(Math.random() * 25) + 55,
-                icon: "Pillar 5 of 5",
+                icon: "Pillar 5 of 6",
                 summary: `Identified potential distribution partners and community trust nodes in ${region}. Leveraging existing ${sector} networks could provide a faster market entry path.`,
                 details: [
                     `Identified local business influencers with active followings in ${region}`,
@@ -115,10 +115,22 @@ export function generateMockAuditResult(
                 distributionNodes: [],
                 partnerships: [],
             } as TrustAnchor,
+            researchLibrarian: {
+                name: "Research Librarian",
+                score: Math.floor(Math.random() * 20) + 70,
+                icon: "Pillar 6 of 6",
+                summary: "Digital archives and regional sector reports confirm a significant structural gap in current local solutions.",
+                details: [
+                    "Cross-referencing 2024 industrial whitepapers for the region",
+                    "Extracted data from 3 prominent academic studies on local tech adoption",
+                    "Clustered historical failure data from public sector registries",
+                    "Validated signal strength against 2023 regional census data",
+                ],
+            },
             competitiveLandscape: {
                 name: "Competitive Landscape",
                 score: Math.floor(Math.random() * 30) + 40,
-                icon: "Pillar 6 of 6",
+                icon: "Pillar 7 of 7",
                 summary: `Comprehensive audit of ${region} and global players in the ${sector} space. Identifying both active and failed precedents to avoid common pitfalls.`,
                 details: [
                     "Analyzing 12+ historical players in the African market",

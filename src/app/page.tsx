@@ -19,7 +19,7 @@ import Ticker from "@/components/Ticker";
 import CustomSelect from "@/components/CustomSelect";
 import AgentLog from "@/components/AgentLog";
 import Dashboard from "@/components/Dashboard";
-import { REGIONS, SECTORS } from "@/lib/constants";
+import { REGIONS, SECTORS, CONTINENTS } from "@/lib/constants";
 import type { NexusAuditResult } from "@/lib/types";
 
 type AppPhase = "intake" | "processing" | "dashboard";
@@ -28,10 +28,16 @@ export default function HomePage() {
   const [phase, setPhase] = useState<AppPhase>("intake");
   const [idea, setIdea] = useState("");
   const [region, setRegion] = useState("");
+  const [continent, setContinent] = useState("global");
+  const [regionSearch, setRegionSearch] = useState("");
+  const [sectorSearch, setSectorSearch] = useState("");
   const [sector, setSector] = useState("");
   const [result, setResult] = useState<NexusAuditResult | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const filteredRegions = REGIONS.filter(r => r.label.toLowerCase().includes(regionSearch.toLowerCase()));
+  const filteredSectors = SECTORS.filter(s => s.label.toLowerCase().includes(sectorSearch.toLowerCase()));
 
   useEffect(() => {
     // Automatically load dashboard if returning from a subpage
@@ -213,11 +219,53 @@ export default function HomePage() {
                       />
                     </div>
 
-                    {/* Footer Actions */}
-                    <div className="flex flex-wrap items-center gap-4 pt-2">
-                      <div className="flex gap-3">
-                        <CustomSelect id="region-mini" label="" options={REGIONS} value={region} onChange={setRegion} placeholder="REGION" className="!bg-white !border-[3px] !border-black !rounded-none !py-2 !px-4 !text-[11px] !text-black !font-black !shadow-[3px_3px_0_0_rgba(0,0,0,1)]" />
-                        <CustomSelect id="sector-mini" label="" options={SECTORS} value={sector} onChange={setSector} placeholder="SECTOR" className="!bg-white !border-[3px] !border-black !rounded-none !py-2 !px-4 !text-[11px] !text-black !font-black !shadow-[3px_3px_0_0_rgba(0,0,0,1)]" />
+                    {/* Continent Selector (Motion) */}
+                    <div className="pt-4 border-t-[3px] border-black/5">
+                      <p className="text-[10px] font-black text-black/40 uppercase mb-3 tracking-widest">Select Target Continent</p>
+                      <div className="flex flex-wrap gap-2">
+                        {CONTINENTS.map((c) => (
+                          <motion.button
+                            key={c.value}
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() => setContinent(c.value)}
+                            className={`px-4 py-1.5 border-[2px] border-black text-[10px] font-black uppercase tracking-tighter transition-all ${continent === c.value ? "bg-black text-white shadow-[3px_3px_0_0_rgba(255,255,255,1)]" : "bg-white text-black shadow-[3px_3px_0_0_rgba(0,0,0,1)]"}`}
+                          >
+                            {c.label}
+                          </motion.button>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Footer Actions with Filters */}
+                    <div className="flex flex-col gap-4 pt-4 border-t-[3px] border-black/5 mt-4">
+                      <div className="flex flex-wrap items-center gap-6">
+                        <div className="flex-1 min-w-[200px]">
+                          <div className="relative mb-2">
+                            <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-black/30" />
+                            <input 
+                              type="text" 
+                              placeholder="Filter Regions..." 
+                              value={regionSearch}
+                              onChange={(e) => setRegionSearch(e.target.value)}
+                              className="w-full bg-black/5 border-[2px] border-black px-8 py-1.5 text-[10px] font-black uppercase focus:outline-none"
+                            />
+                          </div>
+                          <CustomSelect id="region-mini" label="" options={filteredRegions} value={region} onChange={setRegion} placeholder="SELECT REGION" className="!bg-white !border-[3px] !border-black !rounded-none !py-2 !px-4 !text-[11px] !text-black !font-black !shadow-[3px_3px_0_0_rgba(0,0,0,1)]" />
+                        </div>
+                        <div className="flex-1 min-w-[200px]">
+                          <div className="relative mb-2">
+                            <Search size={12} className="absolute left-3 top-1/2 -translate-y-1/2 text-black/30" />
+                            <input 
+                              type="text" 
+                              placeholder="Filter Sectors..." 
+                              value={sectorSearch}
+                              onChange={(e) => setSectorSearch(e.target.value)}
+                              className="w-full bg-black/5 border-[2px] border-black px-8 py-1.5 text-[10px] font-black uppercase focus:outline-none"
+                            />
+                          </div>
+                          <CustomSelect id="sector-mini" label="" options={filteredSectors} value={sector} onChange={setSector} placeholder="SELECT SECTOR" className="!bg-white !border-[3px] !border-black !rounded-none !py-2 !px-4 !text-[11px] !text-black !font-black !shadow-[3px_3px_0_0_rgba(0,0,0,1)]" />
+                        </div>
                       </div>
                     </div>
                   </div>

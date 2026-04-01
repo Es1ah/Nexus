@@ -1,5 +1,14 @@
 // Constants for the Nexus application
 
+export const CONTINENTS = [
+    { value: "global", label: "Global" },
+    { value: "africa", label: "Africa" },
+    { value: "europe", label: "Europe" },
+    { value: "americas", label: "Americas" },
+    { value: "asia", label: "Asia" },
+    { value: "oceania", label: "Oceania" },
+];
+
 export const REGIONS = [
     { value: "lagos-nigeria", label: "Lagos, Nigeria" },
     { value: "abuja-nigeria", label: "Abuja, Nigeria" },
