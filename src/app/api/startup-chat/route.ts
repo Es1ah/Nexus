@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { NextResponse } from "next/server";
 import { callAI } from "@/lib/ai-provider";
 import { checkRateLimit } from "@/lib/rate-limiter";
