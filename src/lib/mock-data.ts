@@ -145,10 +145,7 @@ export function generateMockAuditResult(
                         status: "shutdown",
                         region: "local",
                         founders: ["Segun Agbaje", "Femi Otedola"],
-                        funding: [
-                            { round: "Seed", amount: "$500k", date: "2021-02-15", investors: ["Local Angels"] },
-                            { round: "Series A", amount: "$2M", date: "2022-06-10", investors: ["Venture Partners"] }
-                        ],
+                        funding: "$2.5M Total (Seed + Series A)",
                         history: "Started as a last-mile delivery service in Ikeja. Expanded too quickly without proper unit economics.",
                         businessModel: "B2C Logistics",
                         whyItFailed: "Aggressive expansion costs outpaced revenue; burn rate unsustainable during currency devaluation.",
@@ -164,9 +161,7 @@ export function generateMockAuditResult(
                         status: "active",
                         region: "global",
                         founders: ["John Doe", "Jane Smith"],
-                        funding: [
-                            { round: "Series B", amount: "$50M", date: "2023-01-20", investors: ["Global VC"] }
-                        ],
+                        funding: "$50M Series B (Global VC)",
                         history: "Global player entering the African market via Lagos and Nairobi.",
                         businessModel: "SaaS Platform",
                         publicData: { "Global Users": "1M+", "African Status": "Beta" },
