@@ -133,11 +133,7 @@ export default function CompetitorsPage() {
                                         </div>
                                         <div className="flex justify-between">
                                             <span className="text-black/50">Total Funding</span>
-                                            <span>
-                                                {company.funding && company.funding.length > 0
-                                                    ? company.funding.reduce((acc, curr) => acc + ' + ' + curr.amount, '').substring(3)
-                                                    : 'Undisclosed'}
-                                            </span>
+                                            <span>{company.funding || 'Undisclosed'}</span>
                                         </div>
                                     </div>
                                 </div>

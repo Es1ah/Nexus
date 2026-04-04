@@ -9,23 +9,28 @@ import type { NexusAuditResult, SourceReport } from "./types";
 // If Next.js didn't inject .env.local (e.g. cold start, killed process),
 // we read it directly from disk as a fallback.
 function loadEnvKey(keyName: string): string {
-    // First try process.env (normal Next.js injection)
+    // 1. Primary: check standard process.env (Vercel / Production / injected)
     if (process.env[keyName]) return process.env[keyName]!;
 
-    // Fallback: parse .env.local manually from disk
-    try {
-        const envPath = path.join(process.cwd(), ".env.local");
-        const raw = fs.readFileSync(envPath, "utf8");
-        const match = raw.match(new RegExp(`^${keyName}=(.+)$`, "m"));
-        if (match?.[1]) {
-            const val = match[1].trim();
-            process.env[keyName] = val; // cache it
-            console.log(`[Truth Engine] Loaded ${keyName} from .env.local (suffix: ${val.slice(-6)})`);
-            return val;
+    // 2. Failsafe: Only attempt disk read in local development
+    if (process.env.NODE_ENV !== "production" && !process.env.VERCEL) {
+        try {
+            const envPath = path.join(process.cwd(), ".env.local");
+            if (fs.existsSync(envPath)) {
+                const raw = fs.readFileSync(envPath, "utf8");
+                const match = raw.match(new RegExp(`^${keyName}=(.+)$`, "m"));
+                if (match?.[1]) {
+                    const val = match[1].trim();
+                    process.env[keyName] = val; // cache for subsequent calls
+                    return val;
+                }
+            }
+        } catch (e) {
+            console.warn(`[Truth Engine] Failsafe disk read for ${keyName} failed.`);
         }
-    } catch {
-        // file not found
     }
+
+    console.error(`[Truth Engine] CRITICAL: ${keyName} is NOT SET. Audit will fail.`);
     return "";
 }
 
@@ -197,145 +202,42 @@ RESEARCH REQUIREMENTS:
 2. Signal 5+ exact Reddit/Nairaland threads using the LIVE SIGNALS provided.
 3. Signal 5+ academic papers proving the "No Market Need" failure rate (e.g., CB Insights 42%).
 
-For EACH company provide:
-- founders (real names from public records)
-- funding rounds (real amounts, investors from Crunchbase/public records)  
-- history (factual, specific)
-- businessModel (specific)
-- whyItFailed (if shutdown/pivot - specific, factual)
-- publicData (key metrics)
-- articles: 3+ real links from TechCrunch, HackerNews, YC News, a16z blog, or official blogs
+For EACH company (provide 12+):
+- founders: [String]
+- activeStatus: "active" | "shutdown" | "pivot"
+- overview: Concise 1-sentence history
+- funding: Single string summarize total
+- failureReason: 1 sentence if applicable
+- sources: 2 real URLs maximum
 
 SIGNAL SOURCE REQUIREMENTS:
-- App Store excerpts: Real 1-star and 2-star reviews from competitor apps mentioning the problem
-- YouTube: Real educational content URLs about idea validation and founder iteration
-- Reddit/Nairaland: USE THE LIVE SIGNALS ABOVE as your primary source + add real thread URLs
-- Research Papers: Real academic papers with real DOI or direct PDF URLs from arXiv, SSRN, or ResearchGate
+- App Store / YouTube / Reddit / Papers: Max 3 high-quality excerpts each. 
+- Use the LIVE SIGNALS for Reddit/HN threads.
 
-DEEP LINK RULES (NO VIOLATIONS):
-✓ DO: https://www.nairaland.com/7432812/building-tech-startup-nigeria#35891234
-✓ DO: https://news.ycombinator.com/item?id=38654321
-✓ DO: https://youtube.com/watch?v=dQw4w9WgXcQ&t=245
-✓ DO: https://techcrunch.com/2024/01/15/validatorai-raises-seed-round/
-✗ NEVER: https://play.google.com/store/search?q=...
-✗ NEVER: https://youtube.com/results?search_query=...
-✗ NEVER: generic category pages
-
-Respond ONLY with valid, parseable JSON in this EXACT structure (no markdown fences, no explanation):
+Respond ONLY with valid, parseable JSON in this EXACT structure:
 {
-  "marketHunger": {
-    "summary": "Compelling 2-sentence summary backed by HN/Reddit signals above",
-    "details": ["8 specific data points citing real sources", "..."],
-    "score": 75
-  },
-  "regulatoryRadar": {
-    "summary": "2-sentence regulatory overview for ${region}",
-    "details": ["Specific bodies: CAC registration cost ₦50,000", "..."],
-    "score": 55
-  },
-  "competitiveGaps": {
-    "summary": "2-sentence gap analysis citing real competitors",
-    "details": ["Gap 1 with specific evidence", "..."],
-    "score": 68
-  },
-  "resourceBlueprint": {
-    "summary": "2-sentence MVP cost and stack estimate",
-    "details": ["Specific tech, cost, and timeline details", "..."],
-    "score": 72
-  },
-  "trustAnchors": {
-    "summary": "2-sentence trust network summary for ${region}",
-    "details": ["Specific communities, hubs, and partners", "..."],
-    "score": 60
-  },
-  "researchLibrarian": {
-    "summary": "2-sentence academic evidence for the market gap",
-    "details": ["Paper title, DOI, key finding, URL", "..."],
-    "score": 80
-  },
-  "competitiveLandscape": {
-    "summary": "2-sentence landscape overview",
-    "details": ["10 key landscape observations with real data"],
-    "score": 65,
-    "companies": [
-      {
-        "id": "validator-ai",
-        "name": "Validator AI",
-        "status": "active",
-        "region": "global",
-        "founders": ["Ross Currier"],
-        "funding": [],
-        "history": "Launched in 2023 as an AI-powered startup idea validator. Uses GPT-4 to score ideas and identify target segments. Became popular on Product Hunt achieving #3 product of the day.",
-        "businessModel": "Freemium SaaS - free tier for basic validation, paid plans at $49/month for detailed reports",
-        "whyItFailed": "",
-        "publicData": {"ProductHunt": "Top #3 Product of the Day", "Users": "5000+"},
-        "articles": [
-          {"title": "Validator AI lands on Product Hunt Top 3", "url": "https://www.producthunt.com/posts/validator-ai", "source": "ProductHunt"},
-          {"title": "AI Tools for Startup Validation in 2024", "url": "https://news.ycombinator.com/item?id=37823456", "source": "HackerNews"}
-        ]
-      }
-    ]
+  "marketHunger": { "summary": String, "details": [String], "score": Number },
+  "regulatoryRadar": { "summary": String, "details": [String], "score": Number },
+  "competitiveGaps": { "summary": String, "details": [String], "score": Number },
+  "resourceBlueprint": { "summary": String, "details": [String], "score": Number },
+  "trustAnchors": { "summary": String, "details": [String], "score": Number },
+  "researchLibrarian": { "summary": String, "details": [String], "score": Number },
+  "competitiveLandscape": { 
+    "summary": String, 
+    "details": [String], 
+    "score": Number,
+    "companies": [{ "id": String, "name": String, "status": String, "founders": [String], "funding": String, "history": String, "whyItFailed": String, "articles": [{ "title": String, "url": String }] }] 
   },
   "sources": {
-    "appStore": {
-      "count": 45,
-      "topThemes": ["No African market focus", "Too generic", "Missing local context"],
-      "excerpts": [
-        {"content": "This app is great for US markets but completely ignores Africa", "author": "Lagos_Founder", "rating": 2, "url": "https://play.google.com/store/apps/details?id=com.validatorai&reviewId=gp:AOqpTO123"},
-        {"content": "Would love this but there is no Naira pricing or Nigerian regulation guide", "author": "AbujaTech", "rating": 1, "url": "https://play.google.com/store/apps/details?id=com.ideaproof&reviewId=gp:AOqpTO456"}
-      ]
-    },
-    "youtube": {
-      "count": 23,
-      "topThemes": ["How to validate startup ideas", "Founder iteration frameworks", "African tech ecosystem"],
-      "excerpts": [
-        {"content": "Comment from founder: 'This is exactly what I need but it doesn't account for the Nigerian regulatory environment'", "author": "TechStartupNG", "url": "https://youtube.com/watch?v=3fumBcKC6RE&t=145"},
-        {"content": "Comment: 'No African startup validation tool exists that understands our market dynamics'", "author": "IbadanFounder", "url": "https://youtube.com/watch?v=vHHa5NuH3OM&t=240"}
-      ]
-    },
-    "redditNairaland": {
-      "count": 67,
-      "topThemes": ["Startup validation in Nigeria", "Idea iteration tools", "African market research"],
-      "excerpts": [
-        {"content": "I built a startup validation tool but it keeps giving me US-centric data. Nothing covers Lagos or Nairobi market dynamics properly", "author": "u/AfricanFounder2024", "url": "https://reddit.com/r/startups/comments/1a2b3c4/startup_validation_africa"},
-        {"content": "All these idea validation apps are built for Silicon Valley. We need something that understands Nigerian regulations, payment rails like Paystack, and local distribution", "author": "u/NigeriaStartups", "url": "https://reddit.com/r/Nigeria/comments/xyz123/need_idea_validation_tool"}
-      ]
-    },
-    "instagram": {
-      "name": "Instagram Comment Audit",
-      "sourceUrl": "https://www.instagram.com/techcabal/",
-      "topThemes": ["African founders building", "Idea validation tools", "Startup ecosystem"],
-      "excerpts": [
-        {"content": "Where is the Nexus for African startup founders? We need real market data not US stats!", "author": "@abiodun_builds", "url": "https://www.instagram.com/p/C1a2B3cD4eF/"}
-      ]
-    },
-    "nigerianBlogs": {
-      "name": "TechCabal & Nairametrics Blog Audit",
-      "sourceUrl": "https://techcabal.com",
-      "topThemes": ["African startup ecosystem", "Founder resources", "Market validation"],
-      "excerpts": [
-        {"content": "The African startup ecosystem lacks proper market validation infrastructure. Founders are building blindly without demand data", "author": "TechCabal Editorial", "url": "https://techcabal.com/2024/08/15/african-founders-lack-market-research-tools/"},
-        {"content": "With $5.4B invested in African startups in 2023, the need for rigorous idea validation has never been higher", "author": "Nairametrics Staff", "url": "https://nairametrics.com/2024/03/21/african-startup-investment-2023-review/"}
-      ]
-    },
-    "researchPapers": {
-      "name": "Academic & Public Library Audit",
-      "source": "SSRN / Google Scholar / arXiv",
-      "sourceUrl": "https://scholar.google.com",
-      "topThemes": ["Startup failure rates", "Market validation methodology", "African tech adoption"],
-      "excerpts": [
-        {"content": "42% of startups fail because they build products with no market need (CB Insights). Proper idea validation reduces failure rate by 63%", "author": "CB Insights Research", "url": "https://www.cbinsights.com/research/report/startup-failure-reasons-top/"},
-        {"content": "Technology adoption in Sub-Saharan Africa shows distinct patterns from Western markets, requiring localized validation frameworks", "author": "Asongu & Nwachukwu", "url": "https://papers.ssrn.com/sol3/papers.cfm?abstract_id=2713557"}
-      ]
-    }
+    "appStore": { "count": Number, "topThemes": [String], "excerpts": [{"content": String, "author": String, "url": String}] },
+    "youtube": { "count": Number, "topThemes": [String], "excerpts": [{"content": String, "author": String, "url": String}] },
+    "redditNairaland": { "count": Number, "topThemes": [String], "excerpts": [{"content": String, "author": String, "url": String}] },
+    "instagram": { "name": String, "sourceUrl": String, "excerpts": [{"content": String, "author": String, "url": String}] },
+    "nigerianBlogs": { "name": String, "sourceUrl": String, "excerpts": [{"content": String, "author": String, "url": String}] },
+    "researchPapers": { "name": String, "source": String, "excerpts": [{"content": String, "author": String, "url": String}] }
   },
-  "searchAnalytics": {
-    "volume": "8,100 searches/month for 'startup idea validation Africa'",
-    "difficulty": "Medium (KD 34)",
-    "trendingKeywords": ["idea validation app", "startup validation Africa", "founder tool Nigeria", "market research Lagos", "concept testing startup"],
-    "intentMap": {"Informational": 55, "Transactional": 30, "Navigational": 15}
-  },
-  "marketSentiment": {"pos": 58, "neg": 28, "neu": 14}
+  "searchAnalytics": { "volume": String, "difficulty": String, "trendingKeywords": [String], "intentMap": Object },
+  "marketSentiment": {"pos": Number, "neg": Number, "neu": Number}
 }`;
 
     let intel: any = null;
@@ -352,6 +254,21 @@ Respond ONLY with valid, parseable JSON in this EXACT structure (no markdown fen
             .replace(/```\n?/g, "")
             .trim();
 
+        // FAILSAFE: If the AI truncated the response (missing end braces)
+        const openBraces = (cleaned.match(/\{/g) || []).length;
+        const closeBraces = (cleaned.match(/\}/g) || []).length;
+        const openBrackets = (cleaned.match(/\[/g) || []).length;
+        const closeBrackets = (cleaned.match(/\]/g) || []).length;
+
+        if (openBraces > closeBraces) {
+            console.warn(`[Truth Engine] Repairing ${openBraces - closeBraces} missing close braces...`);
+            cleaned += "}".repeat(openBraces - closeBraces);
+        }
+        if (openBrackets > closeBrackets) {
+             console.warn(`[Truth Engine] Repairing ${openBrackets - closeBrackets} missing close brackets...`);
+             cleaned += "]".repeat(openBrackets - closeBrackets);
+        }
+
         // Extract object using bracket matching
         const firstBrace = cleaned.indexOf("{");
         const lastBrace = cleaned.lastIndexOf("}");
@@ -362,15 +279,13 @@ Respond ONLY with valid, parseable JSON in this EXACT structure (no markdown fen
         
         cleaned = cleaned.substring(firstBrace, lastBrace + 1);
 
-        // Fix common AI JSON errors before parsing
-        // 1. Remove trailing commas in arrays/objects
-        cleaned = cleaned.replace(/,\s*([\]\}])/g, "$1");
+        // Fix common AI JSON errors
+        cleaned = cleaned.replace(/,\s*([\]\}])/g, "$1"); // Trailing commas
         
         try {
             intel = JSON.parse(cleaned);
         } catch (parseErr: any) {
             console.warn("[Truth Engine] standard JSON.parse failed, attempting aggressive repair...");
-            // If it still fails, it might be due to unescaped newlines in strings
             const repaired = cleaned.replace(/\n\s*([^"]*":)/g, " $1"); // Join broken lines
             intel = JSON.parse(repaired);
         }
@@ -379,8 +294,7 @@ Respond ONLY with valid, parseable JSON in this EXACT structure (no markdown fen
     } catch (e: any) {
         aiError = e.message;
         console.error("[Truth Engine] ❌ JSON PARSE FAILURE:", aiError);
-        console.log("[Truth Engine] Partial response for debugging:", intelText?.slice(0, 500) + "...");
-        throw new Error(`Data Structure Mismatch: ${aiError}. The AI response was too complex to parse safely. Please try a simpler search or retry.`);
+        throw new Error(`Market Intelligence is too massive for standard parsing. Error: ${aiError}. Please retry with a more specific region/sector.`);
     }
 
     // ── MAP AI RESULTS INTO PILLARS ─────────────────────────────────────────

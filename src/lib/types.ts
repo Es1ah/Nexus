@@ -51,12 +51,7 @@ export interface CompanyProfile {
     status: "active" | "shutdown" | "pivot";
     region: "local" | "African" | "global";
     founders: string[];
-    funding: {
-        round: string;
-        amount: string;
-        date: string;
-        investors: string[];
-    }[];
+    funding: string;
     history: string;
     businessModel: string;
     whyItFailed?: string;
