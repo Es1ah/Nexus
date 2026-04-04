@@ -145,18 +145,13 @@ export default function CompetitorProfilePage() {
                     <div className="p-6 border-[4px] border-black shadow-[8px_8px_0_0_rgba(0,0,0,1)] bg-white">
                         <h3 className="text-lg font-black uppercase tracking-tighter border-b-2 border-black pb-2 mb-4">Funding & Cap Table</h3>
                         <div className="space-y-4">
-                            {company.funding && company.funding.length > 0 ? company.funding.map((round, i) => (
-                                <div key={i} className="flex flex-col gap-1 border-b-2 border-black/10 pb-3 last:border-0 last:pb-0">
-                                    <div className="flex justify-between items-center">
-                                        <span className="font-black uppercase tracking-widest text-[10px] bg-accent px-2 py-0.5 border border-black">{round.round}</span>
-                                        <span className="font-black">{round.amount}</span>
-                                    </div>
-                                    <div className="flex justify-between items-center text-xs mt-1">
-                                        <span className="text-black/60">{round.date}</span>
-                                        <span className="text-black/80 font-bold truncate max-w-[150px]">{round.investors.join(', ')}</span>
-                                    </div>
+                            {company.funding ? (
+                                <div className="p-4 bg-accent/10 border-2 border-black border-dashed">
+                                    <p className="text-sm font-black uppercase leading-tight">
+                                        {company.funding}
+                                    </p>
                                 </div>
-                            )) : (
+                            ) : (
                                 <p className="text-sm font-bold opacity-50 italic">No public funding data available.</p>
                             )}
                         </div>
